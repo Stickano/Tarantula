@@ -2,7 +2,7 @@
 
 ## Read the Simple English word list into an array.
 global $words;
-$words    = array_map('str_getcsv', file('assets/wordlist.csv'));
+$words    = array_map('str_getcsv', file('wordlist.csv'));
 $words    = $words[0];
 
 ## A function that will generate a random sentence of words.
