@@ -72,8 +72,11 @@ $redirect_url = "https://duckduckgo.com";
 $words    = array_map('str_getcsv', file('wordlist.csv'));
 $words    = $words[0];
 
-## Timestamp settings
-date_default_timezone_set($timezone);
+## Additional setting when using the database option.
+if ($use_database) {
+    date_default_timezone_set($timezone);
+    @session_start();
+}
 
 ## A function that will generate a random sentence of words.
 function wordGenerator(int $length = 10) {
@@ -128,7 +131,7 @@ function timestamp(){
 }
 
 ## Depending above settings, save data to database.
-if ($use_database) {
+if ($use_database && !isset($_SESSION['registered'])) {
     $conn = new mysqli($host, $username, $password, $database);
     if ($conn->connect_error)
         die("Connection failed: ".$conn->connect_error);
@@ -142,6 +145,8 @@ if ($use_database) {
 
     $bind->close();
     $conn->close();
+
+    $_SESSION['registered'] = true;
 }
 
 ## Depending on above settings, redirect the user/crawler away.
@@ -156,6 +161,7 @@ $keywords    = str_replace(' ', ', ', $keywords);
 
 ## Generate random data for the view
 $content     = wordGenerator(rand(100, 999));
+
 ## Create a couple of random looking hyperlinks.
 $links       = "";
 $linkCount   = rand(1, 10);
