@@ -19,7 +19,7 @@ User-agent: *
 Disallow: /TarantulaNest/
 ```
 
-Whenever a crawler decides to navigate into the `TarantulaNest/` directory, despite being not to, it will be presented with this randomly created page. Hopefully the crawler will scourer the randomly created links, which all leads back to the same page but with new random content, and waste a great amount of time looking through non-consistent data.
+Whenever a crawler decides to navigate into the `TarantulaNest/` directory, despite being told not to, it will be presented with this randomly created page. Hopefully the crawler will scourer the randomly created links, which all leads back to the same page but with new random content, and waste a great amount of time looking through non-consistent data.
 
 This will not work for all crawlers. They may keep count how many times they've scoured a site and navigate away from that site after _N_-amount of loops. It will depend a lot on the crawler. Of course, this is only meant to catch does crawlers that does not follow its permission instructions - Though it can be used in any case. 
 
