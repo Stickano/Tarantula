@@ -1,9 +1,5 @@
 <?php
 
-## A model to generate random strings.
-include('assets/models/random.php');
-$rand     = new Random();
-
 ## Read the Simple English word list into an array.
 global $words;
 $words    = array_map('str_getcsv', file('assets/wordlist.csv'));
@@ -40,14 +36,14 @@ function randomString(int $length = 8) {
 
 #### META / HEADER (<head> element) DATA
 ## Create a couple of random keywords for the <head> tag.
-$keywords = wordGenerator();
+$keywords = wordGenerator(rand(5, 25));
 $keywords = str_replace(' ', ', ', $keywords);
 
 ## Create a random title.
-$title = wordGenerator();
+$title = wordGenerator(rand(1, 7));
 
 ## Create a random description.
-$description  = wordGenerator();
+$description  = wordGenerator(rand(5, 25));
 #### END META DATA
 
 
@@ -57,7 +53,7 @@ $links      = "";
 $linkCount  = rand(1, 10);
 while ($linkCount--) {
     $links  .= '<a href="?'.randomString(rand(1, 100)).'='.randomString(rand(1, 100)).'"
-                   title="'.wordGenerator().'">'.wordGenerator().'</a> <br>';
+                   title="'.wordGenerator(rand(1, 10)).'">'.wordGenerator(rand(1, 15)).'</a> <br>';
 }
 
 ## Create random content
