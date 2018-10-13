@@ -10,7 +10,6 @@ function wordGenerator(int $length = 10) {
     global $words;
     $wlLength = sizeof($words) - 1;
     $sentence = "";
-
     while ($length--) {
         $wordNum   = rand(0, $wlLength);
         $sentence .= $words[$wordNum];
@@ -33,37 +32,25 @@ function randomString(int $length = 8) {
     return $str;
 }
 
-
-#### META / HEADER (<head> element) DATA
-## Create a couple of random keywords for the <head> tag.
-$keywords = wordGenerator(rand(5, 25));
-$keywords = str_replace(' ', ', ', $keywords);
-
-## Create a random title.
-$title = wordGenerator(rand(1, 7));
-
-## Create a random description.
-$description  = wordGenerator(rand(5, 25));
-#### END META DATA
+## Generate random meta data
+$title       = wordGenerator(rand(1, 7));
+$description = wordGenerator(rand(5, 25));
+$keywords    = wordGenerator(rand(5, 25));
+$keywords    = str_replace(' ', ', ', $keywords);
 
 
-#### DATA FOR THE VIEW
+## Generate random data for the view
+$content     = wordGenerator(rand(100, 999));
 ## Create a couple of random looking hyperlinks.
-$links      = "";
-$linkCount  = rand(1, 10);
+$links       = "";
+$linkCount   = rand(1, 10);
 while ($linkCount--) {
     $links  .= '<a href="?'.randomString(rand(1, 100)).'='.randomString(rand(1, 100)).'"
                    title="'.wordGenerator(rand(1, 10)).'">'.wordGenerator(rand(1, 15)).'</a> <br>';
 }
 
-## Create random content
-$content = wordGenerator(rand(100, 999));
-#### END DATA FOR THE VEIW
 
-
-
-#### START OF HTML DOCUMENT
-
+## HTML
 echo'<!DOCTYPE html>';
 echo'<html>';
 echo'<head>';
