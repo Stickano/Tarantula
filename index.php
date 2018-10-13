@@ -1,9 +1,79 @@
 <?php
 
+#### DATABASE COMMUNICATION & ADDITIONAL SETTINGS
+#   In case you would like to register these hits to a database,
+#   these below settings will quickly allow you to do just that.
+#   It is an easy way to monitor and register crawlers, data that
+#   can be used for a variety of cases - Banning them all together i.e.
+#
+#   This script will collect the IP address and a timestamp,
+#   which is the data you can store in your database.
+#
+
+
+## DATABASE SETTINGS
+# If you want this script to register the crawler and store the
+# IP and timestamp data to a database, set below value to 'true'.
+$use_database = false;
+#
+# If this script is using a database, define its credentials.
+$host         = "server.com";
+$username     = "John_Doe";
+$password     = "Password123";
+$database     = "Database_Name";
+#
+#
+# If you are using the database function of this script,
+# fill in the table and column names in below SQL string.
+#
+# Column 1 will be the timestamp and column 2 will be the IP address.
+# Both will be returned in a string format. If the IP couldn't be read
+# a null value is returned.
+#
+# This script uses prepared statements, so leave the questionmarks (?)
+# as they are:
+# https://www.w3schools.com/php/php_mysql_prepared_statements.asp
+$sql = "INSERT INTO table (column_1, column_2) VALUES (?, ?)";
+
+
+## TIMESTAMP SETTINGS
+# Set the timezone for the timestamp.
+# https://secure.php.net/manual/en/timezones.php
+$timezone  = "Europe/Copenhagen";
+#
+# The output of the timestamp value.
+# https://secure.php.net/manual/en/function.date.php
+$timestamp = "d-m-Y H:i";
+
+
+## REDIRECT SETTINGS
+# If you, instead of messing with the crawler as this script is intended,
+# decide to redirect any hits away to a different URL, this is possible
+# too. Set the below value to 'true' to use the redirect function.
+#
+# If you've defined the database communication above, this script
+# will first register and create the database row, before redirecting
+# the crawler/user away to the defined URL.
+$use_redirect = false;
+#
+# The URL that the crawler will be redirected to:
+$redirect_url = "https://duckduckgo.com";
+
+
+#
+#   Below this point is the actually script functionality.
+#   Possible settings for this script is define above this point.
+#
+#### END OF DATABASE COMMUNICATION AND ADDITIONAL SETTINGS
+
+
+
 ## Read the Simple English word list into an array.
-global $words;
 $words    = array_map('str_getcsv', file('wordlist.csv'));
 $words    = $words[0];
+
+## Timestamp settings
+date_default_timezone_set($timezone);
 
 ## A function that will generate a random sentence of words.
 function wordGenerator(int $length = 10) {
@@ -32,12 +102,57 @@ function randomString(int $length = 8) {
     return $str;
 }
 
-## Generate random meta data
+## A function to catch the crawlers IP address.
+function getIp() {
+    $ipaddress = null;
+    if (getenv('HTTP_CLIENT_IP'))
+        $ipaddress = getenv('HTTP_CLIENT_IP');
+    else if(getenv('HTTP_X_FORWARDED_FOR'))
+        $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
+    else if(getenv('HTTP_X_FORWARDED'))
+        $ipaddress = getenv('HTTP_X_FORWARDED');
+    else if(getenv('HTTP_FORWARDED_FOR'))
+        $ipaddress = getenv('HTTP_FORWARDED_FOR');
+    else if(getenv('HTTP_FORWARDED'))
+       $ipaddress = getenv('HTTP_FORWARDED');
+    else if(getenv('REMOTE_ADDR'))
+        $ipaddress = getenv('REMOTE_ADDR');
+    return $ipaddress;
+}
+
+## A function that will create a timestamp.
+function timestamp(){
+    global $timestamp;
+    $date = date($timestamp);
+    return $date;
+}
+
+## Depending above settings, save data to database.
+if ($use_database) {
+    $conn = new mysqli($host, $username, $password, $database);
+    if ($conn->connect_error)
+        die("Connection failed: ".$conn->connect_error);
+
+    $bind = $conn->prepare($sql);
+    $bind->bind_param("ss", $time, $ip);
+
+    $ip   = getIp();
+    $time = timestamp();
+    $bind->execute();
+
+    $bind->close();
+    $conn->close();
+}
+
+## Depending on above settings, redirect the user/crawler away.
+if ($use_redirect)
+    header("location:".$redirect_url);
+
+## Generate random meta data.
 $title       = wordGenerator(rand(1, 7));
 $description = wordGenerator(rand(5, 25));
 $keywords    = wordGenerator(rand(5, 25));
 $keywords    = str_replace(' ', ', ', $keywords);
-
 
 ## Generate random data for the view
 $content     = wordGenerator(rand(100, 999));
