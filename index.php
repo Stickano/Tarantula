@@ -27,7 +27,7 @@ function randomString(int $length = 8) {
 
     $str = "";
     for($i = 0; $i < $length; $i++){
-        $pos = rand(0, strLen($string) - 1);
+        $pos  = rand(0, strLen($string) - 1);
         $str .= $string{$pos};
     }
     return $str;
@@ -65,7 +65,7 @@ $content = wordGenerator(rand(100, 999));
 #### START OF HTML DOCUMENT
 
 echo'<!DOCTYPE html>';
-echo'<html lang="da">';
+echo'<html>';
 echo'<head>';
     echo'<title>'.$title.'</title>';
     echo'<meta name="description" content="'.$description.'" />';
