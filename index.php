@@ -1,6 +1,7 @@
 <?php
 
 #### DATABASE COMMUNICATION & ADDITIONAL SETTINGS
+#
 #   In case you would like to register these hits to a database,
 #   these below settings will quickly allow you to do just that.
 #   It is an easy way to monitor and register crawlers, data that
@@ -22,18 +23,11 @@ $username     = "John_Doe";
 $password     = "Password123";
 $database     = "Database_Name";
 #
-#
-# If you are using the database function of this script,
-# fill in the table and column names in below SQL string.
-#
-# Column 1 will be the timestamp and column 2 will be the IP address.
-# Both will be returned in a string format. If the IP couldn't be read
-# a null value is returned.
-#
-# This script uses prepared statements, so leave the questionmarks (?)
-# as they are:
-# https://www.w3schools.com/php/php_mysql_prepared_statements.asp
-$sql = "INSERT INTO table (column_1, column_2) VALUES (?, ?)";
+# If you are using a database, define the table name
+# and the column names for both the IP and timestamp value.
+$table_name       = "crawlers";
+$ip_column        = "ip_address";
+$timestamp_column = "time";
 
 
 ## TIMESTAMP SETTINGS
@@ -136,6 +130,7 @@ if ($use_database && !isset($_SESSION['registered'])) {
     if ($conn->connect_error)
         die("Connection failed: ".$conn->connect_error);
 
+    $sql = "INSERT INTO ".$table_name." (".$timestamp_column.", ".$ip_column.") VALUES (?, ?)";
     $bind = $conn->prepare($sql);
     $bind->bind_param("ss", $time, $ip);
 
