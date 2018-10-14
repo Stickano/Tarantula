@@ -14,7 +14,8 @@
 
 ## DATABASE SETTINGS
 # If you want this script to register the crawler and store the
-# IP and timestamp data to a database, set below value to 'true'.
+# IP, user agent and timestamp data to a database table,
+# set below value to 'true'.
 $use_database = false;
 #
 # If this script is using a database, define its credentials.
@@ -24,10 +25,10 @@ $password     = "Password123";
 $database     = "Database_Name";
 #
 # If you are using a database, define the table name
-# and the column names for both the IP and timestamp value.
+# and the column names for the IP, user agent and timestamp value.
 $table_name       = "crawlers";
 $ip_column        = "ip_address";
-$timestamp_column = "time";
+$timestamp_column = "timestamp";
 $userAgent_column = "user_agent";
 
 
@@ -126,6 +127,7 @@ function getTime() {
     return $date;
 }
 
+## A function to catch the crawlers user-agent.
 function getUserAgent() {
     $userAgent = null;
     if (isset($_SERVER['HTTP_USER_AGENT']))
