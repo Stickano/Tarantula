@@ -5,9 +5,9 @@
 #   In case you would like to register these hits to a database,
 #   these below settings will quickly allow you to do just that.
 #   It is an easy way to monitor and register crawlers, data that
-#   can be used for a variety of cases - Banning them all together i.e.
+#   can be used for a variety of cases.
 #
-#   This script will collect the IP address and a timestamp,
+#   This script will collect the IP address, user agent and a timestamp,
 #   which is the data you can store in your database.
 #
 
@@ -28,6 +28,7 @@ $database     = "Database_Name";
 $table_name       = "crawlers";
 $ip_column        = "ip_address";
 $timestamp_column = "time";
+$userAgent_column = "user_agent";
 
 
 ## TIMESTAMP SETTINGS
@@ -68,8 +69,8 @@ $words    = $words[0];
 
 ## Additional setting when using the database option.
 if ($use_database) {
-    date_default_timezone_set($timezone);
     @session_start();
+    date_default_timezone_set($timezone);
 }
 
 ## A function that will generate a random sentence of words.
@@ -118,10 +119,19 @@ function getIp() {
 }
 
 ## A function that will create a timestamp.
-function timestamp(){
+function getTime() {
     global $timestamp;
     $date = date($timestamp);
+
     return $date;
+}
+
+function getUserAgent() {
+    $userAgent = null;
+    if (isset($_SERVER['HTTP_USER_AGENT']))
+        $userAgent = $_SERVER['HTTP_USER_AGENT'];
+
+    return $userAgent;
 }
 
 ## Depending above settings, save data to database.
@@ -130,12 +140,15 @@ if ($use_database && !isset($_SESSION['registered'])) {
     if ($conn->connect_error)
         die("Connection failed: ".$conn->connect_error);
 
-    $sql = "INSERT INTO ".$table_name." (".$timestamp_column.", ".$ip_column.") VALUES (?, ?)";
+    $sql = "INSERT INTO ".$table_name."
+                        (".$timestamp_column.", ".$ip_column.", ".$userAgent_column.")
+                        VALUES (?, ?, ?)";
     $bind = $conn->prepare($sql);
-    $bind->bind_param("ss", $time, $ip);
+    $bind->bind_param("sss", $time, $ip, $userAgent);
 
-    $ip   = getIp();
-    $time = timestamp();
+    $ip        = getIp();
+    $time      = getTime();
+    $userAgent = getUserAgent();
     $bind->execute();
 
     $bind->close();
